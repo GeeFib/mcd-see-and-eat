@@ -141,8 +141,8 @@ export MCD_MCP_TOKEN=<你的 Token>
 ### 3. 跑
 
 ```bash
-git clone https://github.com/<你的账号>/mcd-see-and-eat.git
-cd mcd-see-and-eat
+git clone https://github.com/GeeFib/mmm.git
+cd mmm
 
 # 三餐都在麦当劳解决（自动放开餐曲）
 python scripts/plan.py --sex male --age 28 --height 175 --weight 72 \
