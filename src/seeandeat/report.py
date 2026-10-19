@@ -149,11 +149,13 @@ def render_markdown(ctx: PlanContext, slots: tuple[str, ...] = ALL_SLOTS) -> str
     # 四、诚实提示
     lines.append("## 四、必须说清楚的三件事")
     lines.append("")
-    best_na = min((p.totals[4] for p in ctx.plans), default=0)
+    na_lo = min((p.totals[4] for p in ctx.plans), default=0)
+    na_hi = max((p.totals[4] for p in ctx.plans), default=0)
+    na_range = (f"{na_lo:.0f}mg" if len(ctx.plans) == 1
+                else f"{na_lo:.0f}-{na_hi:.0f}mg")
     lines.append(
-        f"1. **钠几乎不可能不超标。** 本次三套方案的钠在 "
-        f"{min(p.totals[4] for p in ctx.plans):.0f}-{max(p.totals[4] for p in ctx.plans):.0f}mg，"
-        f"最低也有 {best_na:.0f}mg。麦当劳单个主食钠含量普遍在 500-1200mg，"
+        f"1. **钠几乎不可能不超标。** 本次方案的钠为 {na_range}，"
+        f"最低也有 {na_lo:.0f}mg。麦当劳单个主食钠含量普遍在 500-1200mg，"
         "三餐都吃麦当劳基本会顶到或超过 2000mg 上限。"
         "建议其他餐次多吃新鲜蔬果补钾、全天多喝水。"
     )
@@ -359,8 +361,9 @@ def render_html(ctx: PlanContext, slots: tuple[str, ...] = ALL_SLOTS) -> str:
     hi_na = max((p.totals[4] for p in ctx.plans), default=0)
     parts.append(
         "<h2>必须说清楚的三件事</h2><div class='note'><ol>"
-        f"<li><b>钠几乎不可能不超标。</b>本次三套方案的钠在 {lo_na:.0f}-{hi_na:.0f}mg，"
-        f"最低也有 {lo_na:.0f}mg。麦当劳单个主食钠含量普遍 500-1200mg，三餐都吃麦当劳基本会顶到或超过 "
+        f"<li><b>钠几乎不可能不超标。</b>本次方案的钠为 "
+        + (f"{lo_na:.0f}mg" if lo_na == hi_na else f"{lo_na:.0f}-{hi_na:.0f}mg")
+        + f"，最低也有 {lo_na:.0f}mg。麦当劳单个主食钠含量普遍 500-1200mg，三餐都吃麦当劳基本会顶到或超过 "
         "2000mg 上限。建议其他餐次多吃新鲜蔬果补钾、全天多喝水。</li>"
         "<li><b>膳食纤维与维生素大概率不足。</b>麦当劳营养接口只提供能量、蛋白质、脂肪、碳水、钠、钙六项，"
         "没有膳食纤维数据；膳食指南推荐每天 25-30g 膳食纤维，靠麦当劳本身很难吃够，请自行补充蔬菜水果。</li>"
