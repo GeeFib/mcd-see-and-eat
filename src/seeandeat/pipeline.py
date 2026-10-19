@@ -1,20 +1,26 @@
 """端到端流水线：门店 → 分时菜单 → 营养目标 → 搭配方案。
 
-关键点：麦当劳分时段供应（早餐约 05:00-10:30，之后切正餐菜单），
-所以要按「餐次时段」分别调用 query-meals 的 reservationDate，
-否则早餐只能拿到麦乐鸡和汉堡，配不出合理的早餐。
+关键点：
+1. 麦当劳分时段供应（早餐约 05:00-10:30，之后切正餐菜单），
+   所以要按「餐次时段」分别调用 query-meals 的 reservationDate，
+   否则早餐只能拿到麦乐鸡和汉堡，配不出合理的早餐。
+2. 优惠券不是装饰：query-store-coupons 拿到门店可用券后，
+   先和餐品池对齐，再用 calculate-price 把「券后价」算准，
+   最后挂到每套方案上。没有券或算价失败都不影响配餐。
 """
 
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from . import coupon as coupon_mod
 from . import menu as menu_mod
 from . import planner
+from .coupon import Coupon
 from .dri import Profile, compute_target, DailyTarget
 from .mcp_client import McdMcpClient
 from .menu import FoodItem
@@ -37,6 +43,23 @@ class PlanContext:
     slot_dates: dict[str, str]
     live: bool = True
     warnings: list[str] = field(default_factory=list)
+    coupons: list[Coupon] = field(default_factory=list)
+    coupon_notes: list[str] = field(default_factory=list)
+    pool_notes: list[str] = field(default_factory=list)
+    reroll: int = 0
+    sound_note: str = ""
+
+    @property
+    def coupon_items(self) -> list[str]:
+        return sorted(coupon_mod.matched_items(self.coupons))
+
+    def best_value_plan(self) -> planner.Plan | None:
+        """用券最划算的那套：先比现金少付，再比同价多拿的价值。"""
+        with_coupon = [p for p in self.plans if p.coupon_hits]
+        if not with_coupon:
+            return None
+        return min(with_coupon,
+                   key=lambda p: (p.pay_price, -p.coupon_extra_value, p.score))
 
 
 def _slot_datetime(now: datetime, slot: str) -> datetime:
@@ -124,10 +147,12 @@ def run(
     keyword: str | None = None,
     options: planner.PlanOptions | None = None,
     offline: bool = False,
+    with_coupons: bool = True,
 ) -> PlanContext:
     """主流程。offline=True 时用仓库自带的快照跑（无网络也能演示）。"""
     options = options or planner.PlanOptions()
     target = compute_target(profile)
+    client: McdMcpClient | None = None
 
     if offline:
         nut = menu_mod.nutrition_from_snapshot(DATA_DIR / "nutrition_snapshot.json")
@@ -165,9 +190,52 @@ def run(
         if not pools[slot]:
             warnings.append(f"{slot} 菜单为空，该餐次无法规划")
 
-    plans = planner.make_plans(pools, target, options)
+    coupon_notes: list[str] = []
+
+    # 1) 门店可用券 → 对齐餐品池 → 真实试算券后价
+    coupons: list[Coupon] = []
+    if with_coupons:
+        store_code_val = str(store.get("storeCode") or "")
+        if offline:
+            snap_path = DATA_DIR / "coupons_snapshot.json"
+            if snap_path.exists():
+                coupons = coupon_mod.loads(snap_path.read_text(encoding="utf-8"))
+        elif client is not None:
+            coupons = coupon_mod.fetch_coupons(
+                client, store_code_val, be_code=store.get("beCode") or None
+            )
+        all_pool = [it for pool in pools.values() for it in pool]
+        coupon_mod.match_pool(coupons, all_pool)
+        usable = [c for c in coupons if c.matched_items]
+        if coupons and not usable:
+            coupon_notes.append(
+                f"门店有 {len(coupons)} 张券，但都不适用于本次搭配的餐品（多为套餐类券）"
+            )
+        elif offline:
+            usable = [c for c in coupons if c.quote] or usable
+        if client is not None and usable:
+            coupon_mod.enrich_quotes(
+                client, usable, store_code_val, be_code=store.get("beCode") or None
+            )
+            priced = [c for c in usable if c.quote]
+            if priced:
+                coupon_notes.append(
+                    f"已用麦当劳算价引擎试算 {len(priced)} 张可用券的券后价"
+                )
+        elif usable and not live:
+            coupon_notes.append(f"共 {len(usable)} 张券适用于本店搭配（券后价来自快照）")
+
+    if coupon_mod.matched_items(coupons):
+        options = replace(options, coupon_items=tuple(sorted(coupon_mod.matched_items(coupons))))
+
+    pool_notes: list[str] = []
+    plans = planner.make_plans(pools, target, options, notes_out=pool_notes)
     if not plans:
         warnings.append("当前门店分时菜单与营养表的交集为空，无法生成方案，请换门店或稍后再试")
+
+    # 2) 把券挂到方案上，算出券后价
+    if plans and coupons:
+        coupon_mod.attach_to_plans(plans, coupons)
 
     return PlanContext(
         profile=profile,
@@ -179,4 +247,27 @@ def run(
         slot_dates=dates,
         live=live,
         warnings=warnings,
+        coupons=coupons,
+        coupon_notes=coupon_notes,
+        pool_notes=pool_notes,
+        reroll=options.reroll,
     )
+
+
+def save_coupon_snapshot(
+    client: McdMcpClient,
+    store: dict[str, Any],
+    path: Path | None = None,
+) -> list[Coupon]:
+    """把当前门店可用券（含券后价）存成快照，供离线演示。"""
+    coupons = coupon_mod.fetch_coupons(
+        client, str(store.get("storeCode") or ""), be_code=store.get("beCode") or None
+    )
+    coupon_mod.match_pool(coupons, [])
+    coupon_mod.enrich_quotes(
+        client, coupons, str(store.get("storeCode") or ""),
+        be_code=store.get("beCode") or None, only_matched=False, limit=20,
+    )
+    out = Path(path) if path else (DATA_DIR / "coupons_snapshot.json")
+    out.write_text(coupon_mod.dumps(coupons), encoding="utf-8")
+    return coupons

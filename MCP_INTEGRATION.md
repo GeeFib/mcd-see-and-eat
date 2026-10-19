@@ -19,10 +19,10 @@
 | 3 | `query-meals` | 门店当前可售卖餐品与价格，**按早/午/晚分时拉取** | ✅ 核心 |
 | 4 | `now-time-info` | 取服务器时间，决定各餐次该预约到哪一天 | ✅ 核心 |
 | 5 | `query-meal-detail` | 查餐品规格与特调选项（下单前核对规格） | 辅助 |
-| 6 | `query-store-coupons` | 查该门店可用优惠券 | ✅ 下单链路 |
-| 7 | `calculate-price` | 算商品金额、打包费、配送费、优惠与应付 | ✅ 下单链路 |
+| 6 | `query-store-coupons` | 查该门店可用优惠券与**券商品编码** | ✅ 核心 |
+| 7 | `calculate-price` | 算商品金额、打包费、配送费、优惠与应付；**带券实测券后价** | ✅ 核心 |
 | 8 | `create-order` | 创建真实订单并返回支付链接 | ✅ 下单链路 |
-| 9 | `available-coupons` / `auto-bind-coupons` | 麦麦省领券（`scripts/` 中预留入口） | 可选 |
+| 9 | `available-coupons` / `auto-bind-coupons` | 麦麦省可领券查询 / 一键领券（`scripts/coupons.py --claim`） | ✅ 券链路 |
 | 10 | `delivery-query-addresses` / `delivery-query-stores` | 外送场景选地址与门店（预留） | 可选 |
 
 ---
@@ -44,13 +44,19 @@
    · 反查菜单拿价格与 productCode
    · 剔除捆绑套餐与营养表未覆盖的限定新品，绝不估算
         │
-⑤ 束搜索组合优化（本地）
-        ▼
-   三套方案 + Markdown / HTML 报告
+⑤ query-store-coupons         查门店可用券（含券商品编码）
         │
-        ├─⑥ query-store-coupons   查可用券
-        ├─⑦ calculate-price       算价
-        └─⑧ create-order          下单（需用户确认）
+⑥ calculate-price × N         逐张试算券后价，判定「少付钱」还是「同价多拿」
+        ▼
+   券 ⟷ 餐品池对齐（严格匹配：冰/热、大中小杯、份数对不上就不算）
+        │
+⑦ 束搜索组合优化（本地）
+   目标 = 整日营养偏离 + 供能比 + 重复度 + 换一批回避 + 券偏好
+        ▼
+   三套方案（含券后价与划算方式）+ Markdown / HTML 报告
+        │
+        ├─⑧ calculate-price       整单算价（可带 couponId/couponCode）
+        └─⑨ create-order          下单（需用户确认）
 ```
 
 ### 调用示例
@@ -70,7 +76,35 @@
 ```
 
 ```jsonc
-// ⑦ 算价（注意字段名是 productCode，金额单位是「分」）
+// ⑤ 查门店可用券：返回 data[].{title, couponId, couponCode, products[].productCode}
+{
+  "name": "query-store-coupons",
+  "arguments": { "storeCode": "1420621", "orderType": 1, "beType": 1 }
+}
+```
+
+```jsonc
+// ⑥ 核销券试算（关键！见下面「已知的接口边界」第 4 条）
+//    items[].productCode 必须是「券商品自己的编码」，并同时带 couponId + couponCode
+{
+  "name": "calculate-price",
+  "arguments": {
+    "storeCode": "1420621",
+    "orderType": 1,
+    "beType": 1,
+    "items": [{
+      "productCode": "9900012387",              // 券商品「中薯条买一送一」
+      "quantity": 1,
+      "couponId": "8692944B045928451618BFF22F535D2A",
+      "couponCode": "MCD60N1317590217R007B"
+    }]
+  }
+}
+// 返回：productPrice 13.5、discount 13.5 → 花一份钱拿两份中薯条（应付 13.5，不是 0）
+```
+
+```jsonc
+// ⑦ 整单算价（字段名是 productCode，金额单位是「分」）
 {
   "name": "calculate-price",
   "arguments": {
@@ -111,13 +145,39 @@
 取服务器时间后，若某餐次的时间点今天已过，就自动顺延到明天，
 避免给用户在 19:00 推荐一份明早就已售罄的早餐。
 
-### 4. `query-store-coupons` → `calculate-price` → `create-order` —— 从建议到行动
+### 4. `query-store-coupons` × `calculate-price` —— 把优惠券变成「可计算的省钱」
 
-营养搭配如果只是「建议」，用户还是要自己打开 App 一个一个点。
-接上这三个 Tool 后，方案里的餐品编码可以直接算价、看券、下单，
-**把「今天吃什么」这个决策完整闭环掉。**
+大多数用法是「查一下有什么券」，本项目把它做成了**券进入搭配算法的输入**：
 
-### 5. `query-meal-detail` —— 规格核对
+1. `query-store-coupons` 返回的每张券都带**券商品编码**（`products[].productCode`）；
+2. 用券商品编码调用 `calculate-price` 试算，拿到真实的 `productPrice` / `discount` / `price`；
+3. 把券与餐品池对齐（严格匹配，见下），命中的餐品在打分时获得偏好；
+4. 说「换一批」时**有券的餐品不做回避** —— 优先给用户真正能省钱的组合。
+
+**关键发现：优惠券有两种完全不同的「划算」，混为一谈就是误导。**
+
+| 类型 | `calculate-price` 表现 | 能不能少付钱 |
+| --- | --- | --- |
+| 特惠 / 立减 | `price` < 券前价 | ✅ 同样的东西少付钱 |
+| 买一送一 / 第二份半价 | `price` 不变，`discount` 记为被送掉那份的价值 | ❌ 价格不变，但多给你一份 |
+
+实测「中薯条买一送一」：`productPrice` 13.5、`discount` 13.5、`price` 13.5 ——
+**花一份钱拿两份**，不是 27 元减到 13.5 元。所以本项目的报告会把「多送的那份」
+折算成额外能量与钠一并列出，绝不把它当折扣讲。
+
+### 5. `available-coupons` + `auto-bind-coupons` —— 券不够就先去领
+
+门店可用券少的时候（例如只有 1 张能对上餐品），先看看麦麦省有没有可领的：
+
+```bash
+python scripts/coupons.py --claim      # 一键领取，会写入用户账号，必须先向用户说明
+```
+
+实测：运行前门店只有 2 张券（1 张可用），领取后变成 3 张，
+多出「9.9元中杯冰美式」。虽然它因为「当天菜单只有热美式、券是冰美式」
+而被判定用不上，但这条链路本身是通的 —— 而**判定用不上正是我们想要的行为**。
+
+### 6. `query-meal-detail` —— 规格核对
 
 `可乐中杯/大杯`、`薯条小/中/大` 营养差很多，规划时按具体规格算，
 下单前用它核对规格与特调选项。
@@ -130,10 +190,14 @@
 
 | 场景 | 请求数 |
 | --- | --- |
-| 配三餐（`plan.py`） | 6（时间 1 + 门店 1 + 营养 1 + 菜单 3） |
-| 下单（`order.py`） | 2–3（查券 + 算价 + 下单） |
+| 配三餐（`plan.py`，含券） | 6 + 1 + N（时间 1 + 门店 1 + 营养 1 + 菜单 3 + 查券 1 + 券后价试算 N 张） |
+| 配三餐（`--no-coupon`） | 6 |
+| 换一批（`--reroll`） | 同上（批次记忆在本地，不额外请求） |
+| 下单（`order.py --use-coupon`） | 2–3（查券 + 算价 + 下单） |
 
-远低于限流阈值。`mcp_client.py` 对 401 / 429 有明确中文提示。
+N = 能对上餐品的券数量，实测 1–3 张，所以一次配餐通常 8–12 次请求，远低于限流阈值。
+`mcp_client.py` 对 401 / 429 有明确中文提示；
+券相关的任何一步失败都不会中断配餐（券只是加分项，不是必需项）。
 
 ---
 
@@ -151,6 +215,23 @@
 
 3. **捆绑套餐（三件套、随心配等）营养无法拆分。**
    → 不参与搭配，在报告「未纳入搭配的餐品」中明确列出并说明原因。
+
+4. **券必须用「券商品的 productCode」核销，且要带 `couponId` + `couponCode`。**
+   用普通餐品编码 + 券参数会返回 0；只传券商品编码不带券参数也返回 0。
+   这是本项目的实测结论（官方 Tool 描述里 `couponId`/`couponCode` 是选填，
+   但实测必须与券商品编码配套使用）。→ `scripts/order.py --use-coupon` 已封装三件套。
+
+5. **有些券对不上「有营养数据的在售单品」。**
+   例如「王牌小食拼」的券商品是套餐类 SKU，营养表没有可拆分的对应条目。
+   → 这类券不参与搭配，只在报告「有券的组合」里说明「对不上餐品」。
+
+6. **券的可用性随门店、时段、账号变化。**
+   → 报告里的券后价是生成报告那一刻的实测值；
+   `data/coupons_snapshot.json` 里的券后价也标注了采集时间。
+
+7. **同一编码可能对应多个规格。**
+   菜单若只列通用名「薯条」（编码 4810），营养表里的 `迷你薯条/中薯条/大薯条`
+   会反查到同一个编码。→ 下单时以麦当劳 App 内的规格选择为准，报告已提示。
 
 ---
 

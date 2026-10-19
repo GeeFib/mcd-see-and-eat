@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""从麦当劳 MCP 拉取最新营养表与分时菜单，写入 data/ 快照。
+"""从麦当劳 MCP 拉取最新营养表、分时菜单与门店优惠券，写入 data/ 快照。
 
 用法：
     export MCD_MCP_TOKEN=<你的 Token>
-    python scripts/refresh_menu.py [--store-code 1420621] [--keyword 蛇口]
+    python scripts/refresh_menu.py [--store-code 1420621] [--keyword 蛇口] [--no-coupons]
 
 快照用途：离线演示 / 单元测试。正式规划请用 scripts/plan.py 走实时接口。
 """
@@ -28,6 +28,7 @@ def main() -> int:
     ap.add_argument("--store-code", default=None, help="门店编码，不填取收藏门店第一家")
     ap.add_argument("--keyword", default=None, help="按关键词/位置搜门店")
     ap.add_argument("--out-dir", default=str(ROOT / "data"))
+    ap.add_argument("--no-coupons", action="store_true", help="不拉优惠券快照")
     args = ap.parse_args()
 
     client = McdMcpClient()
@@ -56,6 +57,12 @@ def main() -> int:
         json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8"
     )
     print(f"已写入 {args.out_dir}/menu_snapshot.json")
+
+    if not args.no_coupons:
+        coupons = pipeline.save_coupon_snapshot(
+            client, store, Path(args.out_dir) / "coupons_snapshot.json"
+        )
+        print(f"优惠券 {len(coupons)} 张（含券后价）已写入 {args.out_dir}/coupons_snapshot.json")
     return 0
 
 

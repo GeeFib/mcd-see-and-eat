@@ -1,0 +1,577 @@
+{
+  "store": {
+    "storeCode": "1420621",
+    "storeName": "麦当劳深圳蛇口网谷餐厅",
+    "address": "南海大道1031号蛇口网谷万海大厦A座106房",
+    "distance": 0,
+    "longitude": 0.0,
+    "latitude": 0.0,
+    "reservation": true,
+    "reservationTimeOptions": [
+      {
+        "date": "2026-10-16",
+        "today": true,
+        "reservationOptionText": "下午茶(14:44至16:45)，夜市(17:14至20:46)"
+      },
+      {
+        "date": "2026-10-17",
+        "today": false,
+        "reservationOptionText": "早餐(07:14至10:15)，午餐(10:44至14:15)，下午茶(14:44至16:45)，夜市(17:14至20:46)"
+      }
+    ]
+  },
+  "slotDates": {
+    "breakfast": "2026-10-17 08:30",
+    "lunch": "2026-10-17 12:00",
+    "dinner": "2026-10-16 18:30"
+  },
+  "target": {
+    "profile": {
+      "sex": "male",
+      "age": 28,
+      "height_cm": 175.0,
+      "weight_kg": 72.0,
+      "activity": "sedentary",
+      "goal": "maintain"
+    },
+    "bmr": 1679,
+    "tdee": 2350,
+    "pal": 1.4,
+    "pal_desc": "久坐办公（几乎不运动，典型打工人）",
+    "goal_desc": "维持体重",
+    "total": {
+      "kcal": 2350,
+      "protein_g": 72.0,
+      "fat_g": 78.3,
+      "carb_g": 339.3,
+      "sodium_mg": 2000.0,
+      "calcium_mg": 800.0,
+      "protein_ratio": 0.123,
+      "fat_ratio": 0.3,
+      "carb_ratio": 0.577
+    },
+    "meals": {
+      "breakfast": {
+        "kcal": 658,
+        "protein_g": 18.1,
+        "fat_g": 21.9,
+        "carb_g": 97.0,
+        "sodium_mg": 560.0,
+        "calcium_mg": 224,
+        "protein_ratio": 0.11,
+        "fat_ratio": 0.3,
+        "carb_ratio": 0.59
+      },
+      "lunch": {
+        "kcal": 893,
+        "protein_g": 30.1,
+        "fat_g": 29.8,
+        "carb_g": 126.2,
+        "sodium_mg": 760.0,
+        "calcium_mg": 304,
+        "protein_ratio": 0.135,
+        "fat_ratio": 0.3,
+        "carb_ratio": 0.565
+      },
+      "dinner": {
+        "kcal": 799,
+        "protein_g": 24.5,
+        "fat_g": 26.6,
+        "carb_g": 115.4,
+        "sodium_mg": 680.0,
+        "calcium_mg": 272,
+        "protein_ratio": 0.123,
+        "fat_ratio": 0.3,
+        "carb_ratio": 0.577
+      }
+    },
+    "notes": [
+      "BMI 23.5，正常（18.5-23.9）",
+      "BMR 1679 kcal × PAL 1.4（久坐办公（几乎不运动，典型打工人））= TDEE 2350 kcal，维持体重后每日目标 2350 kcal",
+      "钠上限 2000mg/日（相当于食盐 5g，《中国居民膳食指南 2022》推荐上限）",
+      "钙目标 800mg/日（DRIs 2023 成人 RNI）",
+      "三餐供能比按膳食指南推荐：早餐 25-30%、午餐 30-40%、晚餐 30-35%"
+    ]
+  },
+  "reroll": 0,
+  "sound": "开餐曲：已关闭",
+  "couponNotes": [
+    "已用麦当劳算价引擎试算 1 张可用券的券后价"
+  ],
+  "poolNotes": [],
+  "coupons": {
+    "available": 3,
+    "usable": [
+      "中薯条"
+    ],
+    "usableCount": 1,
+    "detail": [
+      {
+        "title": "中薯条买一送一",
+        "couponId": "8692944B045928451618BFF22F535D2A",
+        "couponCode": "MCD60N1317590217R007B",
+        "promotionId": "112458028",
+        "tradeDateTime": "2026-10-12 10:30:00-2026-10-16 23:59:59",
+        "kind": "bogo",
+        "kindLabel": "买一送一",
+        "products": [
+          {
+            "code": "9900012387",
+            "name": "中薯条买一送一"
+          }
+        ],
+        "baseNames": [
+          "中薯条"
+        ],
+        "matchedItems": [
+          "中薯条"
+        ],
+        "quote": {
+          "price": 13.5,
+          "origin": 27.0,
+          "discount": 13.5
+        }
+      }
+    ]
+  },
+  "plans": [
+    {
+      "preset": "balanced",
+      "presetLabel": "均衡日常",
+      "score": 0.1099,
+      "price": 136.5,
+      "couponSaving": 0.0,
+      "couponExtraValue": 13.5,
+      "netPrice": 136.5,
+      "couponHeadline": "价格不变，多拿价值 ¥13.5 的东西",
+      "couponHits": [
+        {
+          "slot": "lunch",
+          "item": "中薯条",
+          "couponTitle": "中薯条买一送一",
+          "couponId": "8692944B045928451618BFF22F535D2A",
+          "couponCode": "MCD60N1317590217R007B",
+          "kindLabel": "买一送一",
+          "mode": "bonus",
+          "unitPrice": 13.5,
+          "listPrice": 13.5,
+          "origin": 13.5,
+          "paid": 13.5,
+          "saving": 0.0,
+          "bonusUnits": 1.0,
+          "bonusValue": 13.5,
+          "bonusKcal": 289.0,
+          "bonusSodium": 165.0,
+          "redeemProductCode": "9900012387",
+          "note": "多送 1 份中薯条：价值 ¥13.5，额外 289 kcal、165 mg 钠",
+          "headLine": "¥13.5 不变，多送 1 份（价值 ¥13.5）"
+        }
+      ],
+      "totals": {
+        "kcal": 2182.0,
+        "protein": 78.0,
+        "fat": 74.0,
+        "carb": 287.0,
+        "sodium": 2202.0,
+        "calcium": 834.0
+      },
+      "meals": {
+        "breakfast": [
+          {
+            "name": "火腿扒麦满分",
+            "size": "",
+            "code": "1254",
+            "price": 10.0,
+            "kcal": 261.0,
+            "protein": 14.0,
+            "fat": 12.0,
+            "carb": 24.0,
+            "sodium": 608.0,
+            "calcium": 131.0
+          },
+          {
+            "name": "大杯玉米杯",
+            "size": "大杯",
+            "code": "4437",
+            "price": 13.0,
+            "kcal": 87.0,
+            "protein": 4.0,
+            "fat": 1.0,
+            "carb": 12.0,
+            "sodium": 2.0,
+            "calcium": 10.0
+          },
+          {
+            "name": "大杯怡泉+C",
+            "size": "大杯",
+            "code": "515520",
+            "price": 11.5,
+            "kcal": 168.0,
+            "protein": 0.0,
+            "fat": 0.0,
+            "carb": 41.0,
+            "sodium": 0.0,
+            "calcium": 0.0
+          }
+        ],
+        "lunch": [
+          {
+            "name": "麦香鱼",
+            "size": "",
+            "code": "1600",
+            "price": 22.5,
+            "kcal": 325.0,
+            "protein": 16.0,
+            "fat": 13.0,
+            "carb": 35.0,
+            "sodium": 556.0,
+            "calcium": 99.0
+          },
+          {
+            "name": "中薯条",
+            "size": "中",
+            "code": "4810",
+            "price": 13.5,
+            "kcal": 289.0,
+            "protein": 4.0,
+            "fat": 12.0,
+            "carb": 38.0,
+            "sodium": 165.0,
+            "calcium": 18.0
+          },
+          {
+            "name": "热浓浓抹茶牛奶大杯",
+            "size": "大杯",
+            "code": "507394",
+            "price": 19.0,
+            "kcal": 333.0,
+            "protein": 14.0,
+            "fat": 12.0,
+            "carb": 41.0,
+            "sodium": 142.0,
+            "calcium": 482.0
+          }
+        ],
+        "dinner": [
+          {
+            "name": "培根蔬萃双层牛堡",
+            "size": "",
+            "code": "1106",
+            "price": 24.5,
+            "kcal": 442.0,
+            "protein": 24.0,
+            "fat": 23.0,
+            "carb": 34.0,
+            "sodium": 728.0,
+            "calcium": 73.0
+          },
+          {
+            "name": "小杯玉米杯",
+            "size": "小杯",
+            "code": "4437",
+            "price": 13.0,
+            "kcal": 53.0,
+            "protein": 2.0,
+            "fat": 1.0,
+            "carb": 7.0,
+            "sodium": 1.0,
+            "calcium": 6.0
+          },
+          {
+            "name": "可乐大杯",
+            "size": "大杯",
+            "code": "9900008751",
+            "price": 9.5,
+            "kcal": 224.0,
+            "protein": 0.0,
+            "fat": 0.0,
+            "carb": 55.0,
+            "sodium": 0.0,
+            "calcium": 15.0
+          }
+        ]
+      }
+    },
+    {
+      "preset": "high_protein",
+      "presetLabel": "高蛋白保肌",
+      "score": 0.2285,
+      "price": 148.5,
+      "couponSaving": 0.0,
+      "couponExtraValue": 13.5,
+      "netPrice": 148.5,
+      "couponHeadline": "价格不变，多拿价值 ¥13.5 的东西",
+      "couponHits": [
+        {
+          "slot": "lunch",
+          "item": "中薯条",
+          "couponTitle": "中薯条买一送一",
+          "couponId": "8692944B045928451618BFF22F535D2A",
+          "couponCode": "MCD60N1317590217R007B",
+          "kindLabel": "买一送一",
+          "mode": "bonus",
+          "unitPrice": 13.5,
+          "listPrice": 13.5,
+          "origin": 13.5,
+          "paid": 13.5,
+          "saving": 0.0,
+          "bonusUnits": 1.0,
+          "bonusValue": 13.5,
+          "bonusKcal": 289.0,
+          "bonusSodium": 165.0,
+          "redeemProductCode": "9900012387",
+          "note": "多送 1 份中薯条：价值 ¥13.5，额外 289 kcal、165 mg 钠",
+          "headLine": "¥13.5 不变，多送 1 份（价值 ¥13.5）"
+        }
+      ],
+      "totals": {
+        "kcal": 2280.0,
+        "protein": 94.0,
+        "fat": 77.0,
+        "carb": 288.0,
+        "sodium": 2498.0,
+        "calcium": 1261.0
+      },
+      "meals": {
+        "breakfast": [
+          {
+            "name": "原味板烧鸡腿麦满分",
+            "size": "",
+            "code": "6800",
+            "price": 15.0,
+            "kcal": 246.0,
+            "protein": 15.0,
+            "fat": 9.0,
+            "carb": 25.0,
+            "sodium": 611.0,
+            "calcium": 133.0
+          },
+          {
+            "name": "小杯玉米杯",
+            "size": "小杯",
+            "code": "4437",
+            "price": 13.0,
+            "kcal": 53.0,
+            "protein": 2.0,
+            "fat": 1.0,
+            "carb": 7.0,
+            "sodium": 1.0,
+            "calcium": 6.0
+          },
+          {
+            "name": "热浓浓抹茶牛奶中杯",
+            "size": "中杯",
+            "code": "507394",
+            "price": 19.0,
+            "kcal": 238.0,
+            "protein": 11.0,
+            "fat": 8.0,
+            "carb": 29.0,
+            "sodium": 104.0,
+            "calcium": 351.0
+          }
+        ],
+        "lunch": [
+          {
+            "name": "麦香鱼",
+            "size": "",
+            "code": "1600",
+            "price": 22.5,
+            "kcal": 325.0,
+            "protein": 16.0,
+            "fat": 13.0,
+            "carb": 35.0,
+            "sodium": 556.0,
+            "calcium": 99.0
+          },
+          {
+            "name": "中薯条",
+            "size": "中",
+            "code": "4810",
+            "price": 13.5,
+            "kcal": 289.0,
+            "protein": 4.0,
+            "fat": 12.0,
+            "carb": 38.0,
+            "sodium": 165.0,
+            "calcium": 18.0
+          },
+          {
+            "name": "热浓浓抹茶牛奶大杯",
+            "size": "大杯",
+            "code": "507394",
+            "price": 19.0,
+            "kcal": 333.0,
+            "protein": 14.0,
+            "fat": 12.0,
+            "carb": 41.0,
+            "sodium": 142.0,
+            "calcium": 482.0
+          }
+        ],
+        "dinner": [
+          {
+            "name": "双层深海鳕鱼堡",
+            "size": "",
+            "code": "9900003586",
+            "price": 24.0,
+            "kcal": 485.0,
+            "protein": 28.0,
+            "fat": 21.0,
+            "carb": 46.0,
+            "sodium": 917.0,
+            "calcium": 147.0
+          },
+          {
+            "name": "大杯玉米杯",
+            "size": "大杯",
+            "code": "4437",
+            "price": 13.0,
+            "kcal": 87.0,
+            "protein": 4.0,
+            "fat": 1.0,
+            "carb": 12.0,
+            "sodium": 2.0,
+            "calcium": 10.0
+          },
+          {
+            "name": "可乐大杯",
+            "size": "大杯",
+            "code": "9900008751",
+            "price": 9.5,
+            "kcal": 224.0,
+            "protein": 0.0,
+            "fat": 0.0,
+            "carb": 55.0,
+            "sodium": 0.0,
+            "calcium": 15.0
+          }
+        ]
+      }
+    },
+    {
+      "preset": "low_sodium",
+      "presetLabel": "低钠轻负担",
+      "score": 1.8955,
+      "price": 123.0,
+      "couponSaving": 0,
+      "couponExtraValue": 0,
+      "netPrice": 123.0,
+      "couponHeadline": "",
+      "couponHits": [],
+      "totals": {
+        "kcal": 1893.0,
+        "protein": 74.0,
+        "fat": 62.0,
+        "carb": 249.0,
+        "sodium": 2037.0,
+        "calcium": 816.0
+      },
+      "meals": {
+        "breakfast": [
+          {
+            "name": "火腿扒麦满分",
+            "size": "",
+            "code": "1254",
+            "price": 10.0,
+            "kcal": 261.0,
+            "protein": 14.0,
+            "fat": 12.0,
+            "carb": 24.0,
+            "sodium": 608.0,
+            "calcium": 131.0
+          },
+          {
+            "name": "大杯玉米杯",
+            "size": "大杯",
+            "code": "4437",
+            "price": 13.0,
+            "kcal": 87.0,
+            "protein": 4.0,
+            "fat": 1.0,
+            "carb": 12.0,
+            "sodium": 2.0,
+            "calcium": 10.0
+          },
+          {
+            "name": "大杯怡泉+C",
+            "size": "大杯",
+            "code": "515520",
+            "price": 11.5,
+            "kcal": 168.0,
+            "protein": 0.0,
+            "fat": 0.0,
+            "carb": 41.0,
+            "sodium": 0.0,
+            "calcium": 0.0
+          }
+        ],
+        "lunch": [
+          {
+            "name": "麦香鱼",
+            "size": "",
+            "code": "1600",
+            "price": 22.5,
+            "kcal": 325.0,
+            "protein": 16.0,
+            "fat": 13.0,
+            "carb": 35.0,
+            "sodium": 556.0,
+            "calcium": 99.0
+          },
+          {
+            "name": "小杯玉米杯",
+            "size": "小杯",
+            "code": "4437",
+            "price": 13.0,
+            "kcal": 53.0,
+            "protein": 2.0,
+            "fat": 1.0,
+            "carb": 7.0,
+            "sodium": 1.0,
+            "calcium": 6.0
+          },
+          {
+            "name": "热浓浓抹茶牛奶大杯",
+            "size": "大杯",
+            "code": "507394",
+            "price": 19.0,
+            "kcal": 333.0,
+            "protein": 14.0,
+            "fat": 12.0,
+            "carb": 41.0,
+            "sodium": 142.0,
+            "calcium": 482.0
+          }
+        ],
+        "dinner": [
+          {
+            "name": "培根蔬萃双层牛堡",
+            "size": "",
+            "code": "1106",
+            "price": 24.5,
+            "kcal": 442.0,
+            "protein": 24.0,
+            "fat": 23.0,
+            "carb": 34.0,
+            "sodium": 728.0,
+            "calcium": 73.0
+          },
+          {
+            "name": "可乐大杯",
+            "size": "大杯",
+            "code": "9900008751",
+            "price": 9.5,
+            "kcal": 224.0,
+            "protein": 0.0,
+            "fat": 0.0,
+            "carb": 55.0,
+            "sodium": 0.0,
+            "calcium": 15.0
+          }
+        ]
+      }
+    }
+  ],
+  "droppedCount": 113
+}

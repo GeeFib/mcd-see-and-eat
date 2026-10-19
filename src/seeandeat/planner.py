@@ -12,7 +12,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from itertools import product
 from typing import Iterable, Sequence
 
@@ -64,6 +64,10 @@ PRESET_TARGET_SCALE: dict[str, dict[str, float]] = {
 }
 
 ALL_SLOTS = ("breakfast", "lunch", "dinner")
+
+# 「换一批」的底线：换主食可以，但替代主食的钠不能比原主食高出这个倍数
+# （池子就这么大，硬换的结果是把「低钠」方案换成高钠方案，那就本末倒置了）
+REROLL_SODIUM_TOLERANCE = 1.15
 
 
 def scaled_target(t: NutrientTarget, scale: dict[str, float]) -> NutrientTarget:
@@ -178,10 +182,42 @@ class Plan:
     totals: tuple[float, ...]
     score: float
     price: float
+    # 优惠券相关（由 coupon.attach_to_plans 回填，没有券时为空/等于原价）
+    coupon_hits: list = field(default_factory=list)
+    coupon_saving: float = 0.0        # 现金少付
+    coupon_extra_value: float = 0.0   # 同价多拿到的价值（买一送一）
+    net_price: float = 0.0
 
     @property
     def kcal(self) -> float:
         return self.totals[0]
+
+    @property
+    def pay_price(self) -> float:
+        """券后实付（没有券时就是原价）。"""
+        return self.net_price if self.net_price > 0 else self.price
+
+    @property
+    def coupon_summary(self) -> str:
+        if not self.coupon_hits:
+            return ""
+        titles = []
+        for h in self.coupon_hits:
+            if h.coupon_title not in titles:
+                titles.append(h.coupon_title)
+        return " + ".join(titles)
+
+    @property
+    def coupon_headline(self) -> str:
+        """一句话说清这套方案用券后到底怎么个划算法。"""
+        if not self.coupon_hits:
+            return ""
+        bits: list[str] = []
+        if self.coupon_saving > 0:
+            bits.append(f"实付 ¥{self.pay_price:.1f}（少付 ¥{self.coupon_saving:.1f}）")
+        if self.coupon_extra_value > 0:
+            bits.append(f"价格不变，多拿价值 ¥{self.coupon_extra_value:.1f} 的东西")
+        return "；".join(bits)
 
     def items(self) -> list[FoodItem]:
         out: list[FoodItem] = []
@@ -201,6 +237,168 @@ class PlanOptions:
     presets: tuple[str, ...] = ("balanced", "high_protein", "low_sodium")
     exclude: tuple[str, ...] = ()                 # 用户忌口关键词
     slots: tuple[str, ...] = ALL_SLOTS            # 哪几餐在麦当劳解决
+    # ---- 「换一批」相关 ----
+    avoid_hard: tuple[str, ...] = ()   # 上一批点过的主食，本批必须换掉
+    avoid_soft: tuple[str, ...] = ()   # 前几批出现过的餐品，本批尽量换掉
+    avoid_penalty: float = 0.12        # 「尽量换掉」的每项扣分
+    reroll: int = 0                    # 第几批（0 = 首批）
+    avoid_sodium_floor: dict = field(default_factory=dict)  # 餐次 → 被避让主食的最低钠
+    reroll_sodium_weight: float = 3.0  # 替代主食钠超基准时的扣分权重
+    reroll_sodium_weight_low_na: float = 6.0  # 低钠预设对钠更敏感，扣得更狠
+    variety_reroll: float = 2.2        # 换一批时更不容忍「批内同款点两遍」
+    # ---- 优惠券相关 ----
+    coupon_items: tuple[str, ...] = ()  # 当前门店有券可用的餐品名
+    coupon_bonus: float = 0.22          # 命中券的加分（体现为等额降分）
+
+
+def _extras_penalty(items: Sequence[FoodItem], options: PlanOptions) -> float:
+    """回避上一批 + 优惠券加持，统一折算成扣分项（可正可负）。
+
+    关键取舍：有券的餐品**不做回避**。用户要「换一批 + 优先有券的组合」，
+    这时候因为上一批点过就把券品排除掉，等于自己把钱扔掉。
+    """
+    pen = 0.0
+    coupon = set(options.coupon_items)
+    soft = set(options.avoid_soft)
+    for i in items:
+        if i.name in coupon:
+            pen -= options.coupon_bonus
+        elif i.name in soft:
+            pen += options.avoid_penalty
+    return pen
+
+
+def required_categories(slot: str) -> set[str]:
+    return {cat for cat, required in MEAL_SLOTS[slot] if required}
+
+
+def _main_category(slot: str) -> str | None:
+    cats = MEAL_SLOTS.get(slot) or ()
+    return cats[0][0] if cats else None
+
+
+def reroll_sodium_floors(
+    pools: dict[str, list[FoodItem]],
+    options: PlanOptions,
+) -> dict[str, float]:
+    """「换一批」的钠基准线：每个餐次被避让主食里钠最低的那个。
+
+    有了基准线，替代主食的钠一旦明显超过它，就在打分阶段被扣分——
+    这样优化器会优先挑「同样不重样、但钠差不多」的替代品。
+    """
+    floors: dict[str, float] = {}
+    if not options.avoid_hard:
+        return floors
+    avoid = set(options.avoid_hard)
+    for slot, pool in pools.items():
+        main_cat = _main_category(slot)
+        if not main_cat:
+            continue
+        avoided = [f for f in pool if f.category == main_cat and f.name in avoid]
+        if avoided:
+            floors[slot] = min(f.sodium for f in avoided)
+    return floors
+
+
+def _reroll_sodium_penalty(
+    slot: str,
+    items: Sequence[FoodItem],
+    options: PlanOptions,
+    weight: float,
+) -> float:
+    """替代主食的钠相对基准的超额扣分（相对幅度，越大越不容忍）。"""
+    floor = options.avoid_sodium_floor.get(slot)
+    if not floor or weight <= 0:
+        return 0.0
+    main_cat = _main_category(slot)
+    threshold = floor * REROLL_SODIUM_TOLERANCE
+    for it in items:
+        if it.category == main_cat and it.sodium > threshold:
+            return weight * (it.sodium - threshold) / max(floor, 1.0)
+        if it.category == main_cat:
+            return 0.0
+    return 0.0
+
+
+def _sodium_guard(
+    slot: str,
+    full: list[FoodItem],
+    kept: list[FoodItem],
+    avoid: set[str],
+    notes: list[str],
+) -> list[FoodItem]:
+    """「换一批」的钠档位保护。
+
+    换主食是本功能的卖点，但不能为了「不重样」把这一餐的钠换高一大截。
+    规则：把被避让的主食里钠最低的那个当基准，如果留下的主食里
+    **没有任何一个**落在基准 × REROLL_SODIUM_TOLERANCE 之内，
+    说明这个餐次根本换不动健康的，就把基准那个放回去，并如实说明。
+    """
+    main_cat = _main_category(slot)
+    if not main_cat:
+        return kept
+    avoided_mains = [f for f in full if f.category == main_cat and f.name in avoid]
+    if not avoided_mains:
+        return kept
+    kept_mains = [f for f in kept if f.category == main_cat]
+    threshold = min(f.sodium for f in avoided_mains) * REROLL_SODIUM_TOLERANCE
+    if kept_mains and min(f.sodium for f in kept_mains) <= threshold:
+        return kept
+    back = min(avoided_mains, key=lambda f: f.sodium)
+    if any(f.name == back.name for f in kept):
+        return kept
+    notes.append(
+        f"{slot}：本批候选里没有钠含量相近的替代主食，「{back.name}」"
+        f"（{back.sodium:.0f} mg 钠）仍在可选之列——硬换会明显抬高这一餐的钠"
+    )
+    return kept + [back]
+
+
+def filter_pools(
+    pools: dict[str, list[FoodItem]],
+    options: PlanOptions,
+) -> tuple[dict[str, list[FoodItem]], list[str]]:
+    """忌口硬过滤 + 「换一批」的主食回避。
+
+    主食回避会保住两件事：
+    1. 可行性——某个必需角色被避让清空了，就放回一个（宁可重复，也不能配不出这餐）；
+    2. 营养——留下的主食里没有钠含量相近的替代，就把最低钠的那个被避让主食放回来
+       （宁可重样，也不能把「低钠」方案换成一个高钠方案）。
+    """
+    out: dict[str, list[FoodItem]] = {}
+    notes: list[str] = []
+    for slot, pool in pools.items():
+        items = _filter_exclude(pool, options.exclude)
+        if options.avoid_hard:
+            need = required_categories(slot)
+            avoid = set(options.avoid_hard)
+            full = items
+            kept = [f for f in full if f.name not in avoid]
+            # 某个必需角色被避让清空了？按原顺序放回一个，宁可重复也不能配不出这餐
+            for cat in need:
+                if any(f.category == cat for f in kept):
+                    continue
+                fallback = next((f for f in full if f.category == cat), None)
+                if fallback is not None:
+                    kept.append(fallback)
+                    notes.append(
+                        f"{slot}：{fallback.category_label}只剩「{fallback.name}」可选，本批保留"
+                    )
+            kept = _sodium_guard(slot, full, kept, avoid, notes)
+            items = kept
+        out[slot] = items
+    return out, notes
+
+
+def _filter_exclude(pool: list[FoodItem], exclude: tuple[str, ...]) -> list[FoodItem]:
+    if not exclude:
+        return pool
+    out = []
+    for f in pool:
+        if any(kw in f.name for kw in exclude):
+            continue
+        out.append(f)
+    return out
 
 
 def _candidates_for_slot(
@@ -218,23 +416,13 @@ def _candidates_for_slot(
     return [(cat, got[cat]) for cat, _ in MEAL_SLOTS[slot] if got.get(cat)]
 
 
-def _filter_exclude(pool: list[FoodItem], exclude: tuple[str, ...]) -> list[FoodItem]:
-    if not exclude:
-        return pool
-    out = []
-    for f in pool:
-        if any(kw in f.name for kw in exclude):
-            continue
-        out.append(f)
-    return out
-
-
 def build_bundles(
     slot: str,
     pool: list[FoodItem],
     target: NutrientTarget,
     w: Weights,
     options: PlanOptions,
+    sodium_weight: float = 0.0,
 ) -> list[Bundle]:
     """穷举单餐组合并按得分排序，返回前 beam_width 个。"""
     cats = _candidates_for_slot(slot, pool, options)
@@ -279,7 +467,11 @@ def build_bundles(
     bundles: list[Bundle] = []
     for combo in combos:
         nut = sum_items(combo)
-        score = score_slot(nut, target, w)
+        score = (
+            score_slot(nut, target, w)
+            + _extras_penalty(combo, options)
+            + _reroll_sodium_penalty(slot, combo, options, sodium_weight)
+        )
         bundles.append(
             Bundle(slot=slot, items=tuple(combo), kcal=nut[0], protein=nut[1], fat=nut[2],
                    carb=nut[3], sodium=nut[4], calcium=nut[5], price=nut[6], score=score)
@@ -295,9 +487,34 @@ def build_bundles(
     ]
     ordered = in_band if len(in_band) >= options.beam_width else bundles
 
+    # 分层取样：主食是「换一批」的主角。如果让某个低钠主食按分数把所有名额占满，
+    # 束搜索里就再没有别的汉堡可选，午晚餐只能重样——重复度惩罚也就无从生效。
+    # 所以每个主食先各取若干，再合并按分数排序。
+    quota = max(4, options.beam_width // max(1, len(mains)))
+    buckets: dict[str, list[Bundle]] = {}
+    for b in ordered:
+        key = b.items[0].name if b.items else ""
+        bucket = buckets.setdefault(key, [])
+        if len(bucket) < quota:
+            bucket.append(b)
+    picked: set[int] = set()
+    merged: list[Bundle] = []
+    for bucket in buckets.values():
+        for b in bucket:
+            merged.append(b)
+            picked.add(id(b))
+    merged.sort(key=lambda b: b.score)
+    for b in ordered:  # 名额没占满就用剩下的补齐
+        if len(merged) >= options.beam_width:
+            break
+        if id(b) not in picked:
+            merged.append(b)
+            picked.add(id(b))
+    merged.sort(key=lambda b: b.score)
+
     seen: set[tuple[str, ...]] = set()
     uniq: list[Bundle] = []
-    for b in ordered:
+    for b in merged:
         key = tuple(sorted(i.name for i in b.items))
         if key in seen:
             continue
@@ -312,10 +529,15 @@ def make_plans(
     pools: dict[str, list[FoodItem]],
     target: DailyTarget,
     options: PlanOptions | None = None,
+    notes_out: list[str] | None = None,
 ) -> list[Plan]:
     """生成若干套整日方案。"""
     options = options or PlanOptions()
-    pools = {k: _filter_exclude(v, options.exclude) for k, v in pools.items()}
+    if options.avoid_hard and not options.avoid_sodium_floor:
+        options = replace(options, avoid_sodium_floor=reroll_sodium_floors(pools, options))
+    pools, pool_notes = filter_pools(pools, options)
+    if notes_out is not None:
+        notes_out.extend(pool_notes)
 
     split_target = {s: target.meals[s].kcal / target.total.kcal for s in target.meals}
 
@@ -343,9 +565,16 @@ def make_plans(
         scale = PRESET_TARGET_SCALE.get(preset, {})
 
         per_slot: dict[str, list[Bundle]] = {}
+        na_w = (
+            options.reroll_sodium_weight_low_na
+            if preset == "low_sodium"
+            else options.reroll_sodium_weight
+        )
         for slot in slots:
             st = scaled_target(target.meals[slot], scale)
-            per_slot[slot] = build_bundles(slot, pools.get(slot, []), st, w, options)
+            per_slot[slot] = build_bundles(
+                slot, pools.get(slot, []), st, w, options, sodium_weight=na_w
+            )
         if not all(per_slot[s] for s in per_slot):
             continue
 
@@ -361,8 +590,20 @@ def make_plans(
             slots_kcal = {s: bundles[s].kcal for s in slots}
             names = [i.name for i in all_items]
             dup = len(names) - len(set(names))
+            main_names = [b.items[0].name for s in slots if (b := bundles.get(s)) and b.items]
+            main_dup = len(main_names) - len(set(main_names))
             pen = score_day(totals, preset_day_target, slots_kcal, day_kcal, split_target, w)
-            pen += options_variety(options) * dup
+            # 换一批时把「批内同款点两遍」看得更重，主食重样再加一倍：
+            # 低钠池本来就窄，不加重的话优化器会为了压钠让午晚餐都点同一只汉堡。
+            variety_w = options.variety_reroll if options.reroll else options_variety(options)
+            pen += variety_w * (dup + 2 * main_dup)
+            # 「换一批」的钠基准线在选批阶段同样要算一遍：
+            # 只在入束时扣分的话，束里的高钠主食会在选批时靠能量贴合度翻盘。
+            for s in slots:
+                b = bundles.get(s)
+                if b:
+                    pen += _reroll_sodium_penalty(s, b.items, options, na_w)
+            pen += _extras_penalty(all_items, options)
             best.append(
                 Plan(preset=preset, preset_label=label, preset_desc=desc,
                      bundles=bundles, totals=totals, score=pen, price=totals[6])

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """把 plan.py 产出的方案真正下单。
 
-流程：读方案 JSON → 查门店可用券 → calculate-price 算价 → （需 --confirm）create-order 下单。
+流程：读方案 JSON → 查门店可用券 → calculate-price 算价 →（需 --confirm）create-order 下单。
 
 ⚠️ create-order 会产生真实订单，必须显式加 --confirm 才会执行。
 
@@ -9,8 +9,15 @@
     python scripts/plan.py ... --json plan.json
     # 先看看价格和可用券，不下单
     python scripts/order.py --plan plan.json --meal lunch --preset balanced
+    # 用上方案里推荐的券（券商品 code + couponId + couponCode 三件套）
+    python scripts/order.py --plan plan.json --meal lunch --preset balanced --use-coupon
     # 确认后再真下单
-    python scripts/order.py --plan plan.json --meal lunch --preset balanced --confirm
+    python scripts/order.py --plan plan.json --meal lunch --preset balanced --use-coupon --confirm
+
+优惠券的核销要点（已实测）：
+麦当劳 MCP 要求 items[] 传「券商品自己的 productCode」，并同时带
+couponId + couponCode；plan.json 里每条 couponHit 都带了这三个值，
+--use-coupon 会自动把对应餐品替换成券商品，并用真实算价结果核对减免额。
 """
 
 from __future__ import annotations
@@ -32,12 +39,18 @@ def _data(raw):
     return raw
 
 
+def _coupon_hits(plan: dict, slots: list[str]) -> list[dict]:
+    return [h for h in (plan.get("couponHits") or []) if h.get("slot") in slots]
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="把搭配方案下单到麦当劳")
     ap.add_argument("--plan", required=True, help="plan.py --json 产出的文件")
     ap.add_argument("--meal", default="lunch", help="breakfast / lunch / dinner / all")
     ap.add_argument("--preset", default=None, help="方案名，默认取第一套")
     ap.add_argument("--store-code", default=None, help="覆盖门店编码")
+    ap.add_argument("--use-coupon", action="store_true",
+                    help="核销方案里推荐的优惠券（换成券商品编码并带 couponId/couponCode）")
     ap.add_argument("--take-way", default=None, help="取餐方式 code，来自 calculate-price 的 takeWayList")
     ap.add_argument("--order-type", type=int, default=1, help="1-到店 2-外送")
     ap.add_argument("--be-type", type=int, default=1, help="1-到店取餐 2-麦乐送 5-得来速 6-团餐")
@@ -60,13 +73,37 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         slots = [args.meal]
 
+    hits = _coupon_hits(plan, slots)
+    used_coupons: list[dict] = []
     items: list[dict] = []
+    skipped_hits: list[dict] = []
+
     for slot in slots:
         for it in plan["meals"][slot]:
             if not it.get("code"):
                 print(f"[跳过] {it['name']} 没有菜单编码", file=sys.stderr)
                 continue
             items.append({"productCode": str(it["code"]), "quantity": 1})
+
+    if args.use_coupon and hits:
+        for h in hits:
+            code = str(h.get("redeemProductCode") or "")
+            if not code or not h.get("couponId"):
+                skipped_hits.append(h)
+                continue
+            # 把被券覆盖的那份餐品替换成券商品（券商品自带「买一送一」等权益）
+            items = [x for x in items if x["productCode"] != code]
+            # 券商品与餐品不是同一 code 时，去掉一份同名餐品，避免重复下单
+            same_name_codes = {str(it["code"]) for it in plan["meals"][h["slot"]]
+                               if it["name"] == h.get("item")}
+            for c in same_name_codes:
+                items = [x for x in items if x["productCode"] != c]
+            entry = {"productCode": code, "quantity": 1,
+                     "couponId": h.get("couponId", ""), "couponCode": h.get("couponCode", "")}
+            if entry not in items:
+                items.append(entry)
+            used_coupons.append(h)
+
     if not items:
         print("没有可下单的餐品", file=sys.stderr)
         return 1
@@ -86,8 +123,22 @@ def main(argv: list[str] | None = None) -> int:
         common["reservationDate"] = args.reservation_date
 
     print(f"门店 {store_code}　方案「{plan.get('presetLabel')}」　餐次 {'+'.join(slots)}")
+    if used_coupons:
+        print(f"已带上 {len(used_coupons)} 张券：")
+        for h in used_coupons:
+            print(f"  - {h.get('couponTitle')}（{h.get('kindLabel')}）"
+                  f"　作用在 {h.get('item')}　预计省 ¥{h.get('saving', 0):.1f}")
+            if h.get("note"):
+                print(f"      {h['note']}")
+    elif hits:
+        print(f"方案里这餐有 {len(hits)} 处可用券，但未加 --use-coupon，按原价计算：")
+        for h in hits:
+            print(f"  - {h.get('couponTitle')} → {h.get('item')}（可省 ¥{h.get('saving', 0):.1f}）")
+    for h in skipped_hits:
+        print(f"[跳过券] {h.get('couponTitle')} 缺少核销参数", file=sys.stderr)
     for it in items:
-        print(f"  - {it['productCode']} × {it['quantity']}")
+        extra = "（券商品）" if it.get("couponId") else ""
+        print(f"  - {it['productCode']} × {it['quantity']}{extra}")
 
     # 1) 可用优惠券
     try:

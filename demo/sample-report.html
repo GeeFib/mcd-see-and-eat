@@ -39,9 +39,27 @@ footer{margin-top:34px;color:var(--sub);font-size:12px;line-height:1.7}
 .preset{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
 .preset h3{margin:0 0 4px;font-size:16px}
 .preset .d{color:var(--sub);font-size:12.5px;min-height:34px}
+.anthem{position:sticky;top:0;z-index:9;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+ background:linear-gradient(90deg,#1b1f24,#3a2a2c);color:#fff;border-radius:12px;
+ padding:12px 16px;margin:0 0 20px;box-shadow:0 6px 18px rgba(27,31,36,.16)}
+.anthem .t{font-weight:700;letter-spacing:.5px}
+.anthem .t small{font-weight:400;color:#e7c9cb;margin-left:8px;font-size:12px}
+.anthem button{appearance:none;border:0;border-radius:99px;padding:8px 16px;cursor:pointer;
+ background:var(--brand);color:#fff;font-size:13px;font-weight:600}
+.anthem button:hover{background:#b91d23}
+.anthem button.playing{background:#12805c}
+.coupon{background:#f3fbf7;border:1px solid #cdeadf}
+.coupon .save{color:#0f6b4e;font-weight:700}
+.chip.promo{background:#e7f6ef;border-color:#bfe4d5;color:#0f6b4e}
+.chip.promo small{color:#4a7f6b}
+.best{margin-top:10px;padding:12px 14px;border-radius:10px;background:#f3fbf7;border:1px dashed #bfe4d5;font-size:13.5px}
 </style></head><body><div class='wrap'>
+<div class='anthem'>
+<button id='anthemBtn' type='button'>▶ 开餐曲</button>
+<div class='t'>♪ 看见什么吃什么<small id='anthemTip'>菜单已读，开饭</small></div>
+</div>
 <h1>🍔 看见什么吃什么</h1>
-<p class='sub'>门店：麦当劳深圳蛇口网谷餐厅（1420621）　·　数据源：麦当劳 MCP 实时菜单　·　生成于 2026-10-16 13:38</p>
+<p class='sub'>门店：麦当劳深圳蛇口网谷餐厅（1420621）　·　数据源：麦当劳 MCP 实时菜单　·　生成于 2026-10-16 15:47</p>
 <h2>你的每日营养目标</h2><div class='card'>
 <div class='price'>身高 175cm　体重 72kg　年龄 28 岁　男　活动：久坐办公（几乎不运动，典型打工人）　目标：维持体重</div>
 <div class='grid'>
@@ -56,80 +74,87 @@ footer{margin-top:34px;color:var(--sub);font-size:12px;line-height:1.7}
 </div>
 <h2>方案 A · 均衡日常</h2>
 <div class='card'>
-<div class='price'>能量、三大营养素、钠钙全面贴近膳食指南　·　预估 <b style='color:#1b1f24'>¥141.5</b></div>
-<h3>早餐　<span class='tag ok'>占全天 28%</span>　<span style='font-size:12px;color:#667085'>2026-10-17 08:30</span></h3>
+<div class='price'>能量、三大营养素、钠钙全面贴近膳食指南　·　预估 <b style='color:#1b1f24'>¥136.5</b>（走券价格不变），另多拿价值 ¥13.5 的东西</div>
+<h3>早餐　<span class='tag warn'>占全天 24%</span>　<span style='font-size:12px;color:#667085'>2026-10-17 08:30</span></h3>
 <div class='meal'>
-<span class='chip'>原味板烧鸡腿麦满分<small>246kcal · 蛋白15g · 钠611mg ¥15.0</small></span>
-<span class='chip'>小杯玉米杯<small>小杯</small><small>53kcal · 蛋白2g · 钠1mg ¥13.0</small></span>
-<span class='chip'>热浓浓抹茶牛奶大杯<small>大杯</small><small>333kcal · 蛋白14g · 钠142mg ¥19.0</small></span>
-</div>
-<table><tr><th>餐品</th><th>能量</th><th>蛋白</th><th>脂肪</th><th>碳水</th><th>钠</th><th>钙</th><th>价格</th></tr>
-<tr><td>原味板烧鸡腿麦满分</td><td>246</td><td>15</td><td>9</td><td>25</td><td>611</td><td>133</td><td>¥15.0</td></tr>
-<tr><td>小杯玉米杯</td><td>53</td><td>2</td><td>1</td><td>7</td><td>1</td><td>6</td><td>¥13.0</td></tr>
-<tr><td>热浓浓抹茶牛奶大杯</td><td>333</td><td>14</td><td>12</td><td>41</td><td>142</td><td>482</td><td>¥19.0</td></tr>
-<tr><td>小计</td><td>632</td><td>31</td><td>22</td><td>73</td><td>754</td><td>621</td><td>¥47.0</td></tr>
-</table>
-<h3>午餐　<span class='tag ok'>占全天 39%</span>　<span style='font-size:12px;color:#667085'>2026-10-17 12:00</span></h3>
-<div class='meal'>
-<span class='chip'>麦香鱼<small>325kcal · 蛋白16g · 钠556mg ¥22.5</small></span>
-<span class='chip'>大薯条<small>大</small><small>379kcal · 蛋白6g · 钠216mg ¥13.5</small></span>
+<span class='chip'>火腿扒麦满分<small>261kcal · 蛋白14g · 钠608mg ¥10.0</small></span>
+<span class='chip'>大杯玉米杯<small>大杯</small><small>87kcal · 蛋白4g · 钠2mg ¥13.0</small></span>
 <span class='chip'>大杯怡泉+C<small>大杯</small><small>168kcal · 蛋白0g · 钠0mg ¥11.5</small></span>
 </div>
 <table><tr><th>餐品</th><th>能量</th><th>蛋白</th><th>脂肪</th><th>碳水</th><th>钠</th><th>钙</th><th>价格</th></tr>
-<tr><td>麦香鱼</td><td>325</td><td>16</td><td>13</td><td>35</td><td>556</td><td>99</td><td>¥22.5</td></tr>
-<tr><td>大薯条</td><td>379</td><td>6</td><td>16</td><td>50</td><td>216</td><td>23</td><td>¥13.5</td></tr>
+<tr><td>火腿扒麦满分</td><td>261</td><td>14</td><td>12</td><td>24</td><td>608</td><td>131</td><td>¥10.0</td></tr>
+<tr><td>大杯玉米杯</td><td>87</td><td>4</td><td>1</td><td>12</td><td>2</td><td>10</td><td>¥13.0</td></tr>
 <tr><td>大杯怡泉+C</td><td>168</td><td>0</td><td>0</td><td>41</td><td>0</td><td>0</td><td>¥11.5</td></tr>
-<tr><td>小计</td><td>872</td><td>22</td><td>29</td><td>126</td><td>772</td><td>122</td><td>¥47.5</td></tr>
+<tr><td>小计</td><td>516</td><td>18</td><td>13</td><td>77</td><td>610</td><td>141</td><td>¥34.5</td></tr>
+</table>
+<h3>午餐　<span class='tag warn'>占全天 43%</span>　<span style='font-size:12px;color:#667085'>2026-10-17 12:00</span></h3>
+<div class='meal'>
+<span class='chip'>麦香鱼<small>325kcal · 蛋白16g · 钠556mg ¥22.5</small></span>
+<span class='chip promo'>中薯条<small>中</small><small>289kcal · 蛋白4g · 钠165mg ¥13.5</small><small>🧧 中薯条买一送一：¥13.5 不变，多送 1 份（价值 ¥13.5）</small></span>
+<span class='chip'>热浓浓抹茶牛奶大杯<small>大杯</small><small>333kcal · 蛋白14g · 钠142mg ¥19.0</small></span>
+</div>
+<table><tr><th>餐品</th><th>能量</th><th>蛋白</th><th>脂肪</th><th>碳水</th><th>钠</th><th>钙</th><th>价格</th></tr>
+<tr><td>麦香鱼</td><td>325</td><td>16</td><td>13</td><td>35</td><td>556</td><td>99</td><td>¥22.5</td></tr>
+<tr><td>中薯条</td><td>289</td><td>4</td><td>12</td><td>38</td><td>165</td><td>18</td><td>¥13.5</td></tr>
+<tr><td>热浓浓抹茶牛奶大杯</td><td>333</td><td>14</td><td>12</td><td>41</td><td>142</td><td>482</td><td>¥19.0</td></tr>
+<tr><td>小计</td><td>947</td><td>34</td><td>37</td><td>114</td><td>863</td><td>599</td><td>¥55.0</td></tr>
 </table>
 <h3>晚餐　<span class='tag ok'>占全天 33%</span>　<span style='font-size:12px;color:#667085'>2026-10-16 18:30</span></h3>
 <div class='meal'>
 <span class='chip'>培根蔬萃双层牛堡<small>442kcal · 蛋白24g · 钠728mg ¥24.5</small></span>
-<span class='chip'>大杯玉米杯<small>大杯</small><small>87kcal · 蛋白4g · 钠2mg ¥13.0</small></span>
+<span class='chip'>小杯玉米杯<small>小杯</small><small>53kcal · 蛋白2g · 钠1mg ¥13.0</small></span>
 <span class='chip'>可乐大杯<small>大杯</small><small>224kcal · 蛋白0g · 钠0mg ¥9.5</small></span>
 </div>
 <table><tr><th>餐品</th><th>能量</th><th>蛋白</th><th>脂肪</th><th>碳水</th><th>钠</th><th>钙</th><th>价格</th></tr>
 <tr><td>培根蔬萃双层牛堡</td><td>442</td><td>24</td><td>23</td><td>34</td><td>728</td><td>73</td><td>¥24.5</td></tr>
-<tr><td>大杯玉米杯</td><td>87</td><td>4</td><td>1</td><td>12</td><td>2</td><td>10</td><td>¥13.0</td></tr>
+<tr><td>小杯玉米杯</td><td>53</td><td>2</td><td>1</td><td>7</td><td>1</td><td>6</td><td>¥13.0</td></tr>
 <tr><td>可乐大杯</td><td>224</td><td>0</td><td>0</td><td>55</td><td>0</td><td>15</td><td>¥9.5</td></tr>
-<tr><td>小计</td><td>753</td><td>28</td><td>24</td><td>101</td><td>730</td><td>98</td><td>¥47.0</td></tr>
+<tr><td>小计</td><td>719</td><td>26</td><td>24</td><td>96</td><td>729</td><td>94</td><td>¥47.0</td></tr>
 </table>
 <div class='grid' style='margin-top:12px'>
-<div class='kpi'><div class='lab'>能量</div><div class='val'>2257</div><div class='lab'>目标 2350 · 96% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:60%;background:#12805c'></i></div></div>
-<div class='kpi'><div class='lab'>蛋白质</div><div class='val'>81g</div><div class='lab'>目标 72g · 112% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:70%;background:#12805c'></i></div></div>
-<div class='kpi'><div class='lab'>脂肪</div><div class='val'>75g</div><div class='lab'>目标 78g · 96% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:60%;background:#12805c'></i></div></div>
-<div class='kpi'><div class='lab'>碳水化合物</div><div class='val'>300g</div><div class='lab'>目标 339g · 88% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:55%;background:#12805c'></i></div></div>
-<div class='kpi'><div class='lab'>钠</div><div class='val'>2256mg</div><div class='lab'>目标 2000mg · 113% <span class='tag warn'>略超</span></div><div class='bar'><i style='width:70%;background:#b54708'></i></div></div>
-<div class='kpi'><div class='lab'>钙</div><div class='val'>841mg</div><div class='lab'>目标 800mg · 105% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:66%;background:#12805c'></i></div></div>
+<div class='kpi'><div class='lab'>能量</div><div class='val'>2182</div><div class='lab'>目标 2350 · 93% <span class='tag warn'>接近</span></div><div class='bar'><i style='width:58%;background:#b54708'></i></div></div>
+<div class='kpi'><div class='lab'>蛋白质</div><div class='val'>78g</div><div class='lab'>目标 72g · 108% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:68%;background:#12805c'></i></div></div>
+<div class='kpi'><div class='lab'>脂肪</div><div class='val'>74g</div><div class='lab'>目标 78g · 95% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:59%;background:#12805c'></i></div></div>
+<div class='kpi'><div class='lab'>碳水化合物</div><div class='val'>287g</div><div class='lab'>目标 339g · 85% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:53%;background:#12805c'></i></div></div>
+<div class='kpi'><div class='lab'>钠</div><div class='val'>2202mg</div><div class='lab'>目标 2000mg · 110% <span class='tag warn'>略超</span></div><div class='bar'><i style='width:69%;background:#b54708'></i></div></div>
+<div class='kpi'><div class='lab'>钙</div><div class='val'>834mg</div><div class='lab'>目标 800mg · 104% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:65%;background:#12805c'></i></div></div>
+</div>
+<h3>这一套能省的券</h3><div class='card coupon'><table>
+<tr><th>餐次</th><th>餐品</th><th>券</th><th>划算方式</th><th>说明</th></tr>
+<tr><td>午餐</td><td>中薯条</td><td>中薯条买一送一</td><td><b class='save'>¥13.5 不变，多送 1 份（价值 ¥13.5）</b></td><td style='text-align:left;white-space:normal'>多送 1 份中薯条：价值 ¥13.5，额外 289 kcal、165 mg 钠</td></tr>
+</table>
+<div class='price' style='margin-top:8px'>本套：价格不变，多拿价值 ¥13.5 的东西。</div>
+<div class='price' style='margin-top:4px'><b>买一送一不是打折</b>：钱一样多，但你多拿到一份 —— 多出来的那份能量与钠已经算给你看了，吃不完分给同事，别当成免费的空气。券后金额由麦当劳 <code>calculate-price</code> 接口带 <code>couponId</code> + <code>couponCode</code> 当场试算，不是估算。</div>
 </div>
 </div>
 <h2>方案 B · 高蛋白保肌</h2>
 <div class='card'>
-<div class='price'>优先把蛋白质吃够（减脂/训练日适用），容忍略高的钠　·　预估 <b style='color:#1b1f24'>¥142.5</b></div>
-<h3>早餐　<span class='tag ok'>占全天 28%</span>　<span style='font-size:12px;color:#667085'>2026-10-17 08:30</span></h3>
+<div class='price'>优先把蛋白质吃够（减脂/训练日适用），容忍略高的钠　·　预估 <b style='color:#1b1f24'>¥148.5</b>（走券价格不变），另多拿价值 ¥13.5 的东西</div>
+<h3>早餐　<span class='tag warn'>占全天 24%</span>　<span style='font-size:12px;color:#667085'>2026-10-17 08:30</span></h3>
 <div class='meal'>
-<span class='chip'>原味板烧鸡腿炒双蛋堡<small>419kcal · 蛋白27g · 钠715mg ¥18.0</small></span>
+<span class='chip'>原味板烧鸡腿麦满分<small>246kcal · 蛋白15g · 钠611mg ¥15.0</small></span>
 <span class='chip'>小杯玉米杯<small>小杯</small><small>53kcal · 蛋白2g · 钠1mg ¥13.0</small></span>
-<span class='chip'>阳光柠檬红茶大杯<small>大杯</small><small>178kcal · 蛋白0g · 钠25mg ¥10.0</small></span>
+<span class='chip'>热浓浓抹茶牛奶中杯<small>中杯</small><small>238kcal · 蛋白11g · 钠104mg ¥19.0</small></span>
 </div>
 <table><tr><th>餐品</th><th>能量</th><th>蛋白</th><th>脂肪</th><th>碳水</th><th>钠</th><th>钙</th><th>价格</th></tr>
-<tr><td>原味板烧鸡腿炒双蛋堡</td><td>419</td><td>27</td><td>21</td><td>30</td><td>715</td><td>116</td><td>¥18.0</td></tr>
+<tr><td>原味板烧鸡腿麦满分</td><td>246</td><td>15</td><td>9</td><td>25</td><td>611</td><td>133</td><td>¥15.0</td></tr>
 <tr><td>小杯玉米杯</td><td>53</td><td>2</td><td>1</td><td>7</td><td>1</td><td>6</td><td>¥13.0</td></tr>
-<tr><td>阳光柠檬红茶大杯</td><td>178</td><td>0</td><td>0</td><td>43</td><td>25</td><td>0</td><td>¥10.0</td></tr>
-<tr><td>小计</td><td>650</td><td>29</td><td>22</td><td>80</td><td>741</td><td>122</td><td>¥41.0</td></tr>
+<tr><td>热浓浓抹茶牛奶中杯</td><td>238</td><td>11</td><td>8</td><td>29</td><td>104</td><td>351</td><td>¥19.0</td></tr>
+<tr><td>小计</td><td>537</td><td>28</td><td>18</td><td>61</td><td>716</td><td>490</td><td>¥47.0</td></tr>
 </table>
-<h3>午餐　<span class='tag ok'>占全天 38%</span>　<span style='font-size:12px;color:#667085'>2026-10-17 12:00</span></h3>
+<h3>午餐　<span class='tag warn'>占全天 42%</span>　<span style='font-size:12px;color:#667085'>2026-10-17 12:00</span></h3>
 <div class='meal'>
 <span class='chip'>麦香鱼<small>325kcal · 蛋白16g · 钠556mg ¥22.5</small></span>
-<span class='chip'>小薯条<small>小</small><small>210kcal · 蛋白3g · 钠120mg ¥13.5</small></span>
+<span class='chip promo'>中薯条<small>中</small><small>289kcal · 蛋白4g · 钠165mg ¥13.5</small><small>🧧 中薯条买一送一：¥13.5 不变，多送 1 份（价值 ¥13.5）</small></span>
 <span class='chip'>热浓浓抹茶牛奶大杯<small>大杯</small><small>333kcal · 蛋白14g · 钠142mg ¥19.0</small></span>
 </div>
 <table><tr><th>餐品</th><th>能量</th><th>蛋白</th><th>脂肪</th><th>碳水</th><th>钠</th><th>钙</th><th>价格</th></tr>
 <tr><td>麦香鱼</td><td>325</td><td>16</td><td>13</td><td>35</td><td>556</td><td>99</td><td>¥22.5</td></tr>
-<tr><td>小薯条</td><td>210</td><td>3</td><td>9</td><td>28</td><td>120</td><td>13</td><td>¥13.5</td></tr>
+<tr><td>中薯条</td><td>289</td><td>4</td><td>12</td><td>38</td><td>165</td><td>18</td><td>¥13.5</td></tr>
 <tr><td>热浓浓抹茶牛奶大杯</td><td>333</td><td>14</td><td>12</td><td>41</td><td>142</td><td>482</td><td>¥19.0</td></tr>
-<tr><td>小计</td><td>868</td><td>33</td><td>34</td><td>104</td><td>818</td><td>594</td><td>¥55.0</td></tr>
+<tr><td>小计</td><td>947</td><td>34</td><td>37</td><td>114</td><td>863</td><td>599</td><td>¥55.0</td></tr>
 </table>
-<h3>晚餐　<span class='tag ok'>占全天 34%</span>　<span style='font-size:12px;color:#667085'>2026-10-16 18:30</span></h3>
+<h3>晚餐　<span class='tag ok'>占全天 35%</span>　<span style='font-size:12px;color:#667085'>2026-10-16 18:30</span></h3>
 <div class='meal'>
 <span class='chip'>双层深海鳕鱼堡<small>485kcal · 蛋白28g · 钠917mg ¥24.0</small></span>
 <span class='chip'>大杯玉米杯<small>大杯</small><small>87kcal · 蛋白4g · 钠2mg ¥13.0</small></span>
@@ -142,68 +167,84 @@ footer{margin-top:34px;color:var(--sub);font-size:12px;line-height:1.7}
 <tr><td>小计</td><td>796</td><td>32</td><td>22</td><td>113</td><td>919</td><td>172</td><td>¥46.5</td></tr>
 </table>
 <div class='grid' style='margin-top:12px'>
-<div class='kpi'><div class='lab'>能量</div><div class='val'>2314</div><div class='lab'>目标 2350 · 98% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:62%;background:#12805c'></i></div></div>
+<div class='kpi'><div class='lab'>能量</div><div class='val'>2280</div><div class='lab'>目标 2350 · 97% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:61%;background:#12805c'></i></div></div>
 <div class='kpi'><div class='lab'>蛋白质</div><div class='val'>94g</div><div class='lab'>目标 72g · 131% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:82%;background:#12805c'></i></div></div>
-<div class='kpi'><div class='lab'>脂肪</div><div class='val'>78g</div><div class='lab'>目标 78g · 100% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:62%;background:#12805c'></i></div></div>
-<div class='kpi'><div class='lab'>碳水化合物</div><div class='val'>297g</div><div class='lab'>目标 339g · 88% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:55%;background:#12805c'></i></div></div>
-<div class='kpi'><div class='lab'>钠</div><div class='val'>2478mg</div><div class='lab'>目标 2000mg · 124% <span class='tag warn'>略超</span></div><div class='bar'><i style='width:77%;background:#b54708'></i></div></div>
-<div class='kpi'><div class='lab'>钙</div><div class='val'>888mg</div><div class='lab'>目标 800mg · 111% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:69%;background:#12805c'></i></div></div>
+<div class='kpi'><div class='lab'>脂肪</div><div class='val'>77g</div><div class='lab'>目标 78g · 98% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:61%;background:#12805c'></i></div></div>
+<div class='kpi'><div class='lab'>碳水化合物</div><div class='val'>288g</div><div class='lab'>目标 339g · 85% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:53%;background:#12805c'></i></div></div>
+<div class='kpi'><div class='lab'>钠</div><div class='val'>2498mg</div><div class='lab'>目标 2000mg · 125% <span class='tag warn'>略超</span></div><div class='bar'><i style='width:78%;background:#b54708'></i></div></div>
+<div class='kpi'><div class='lab'>钙</div><div class='val'>1261mg</div><div class='lab'>目标 800mg · 158% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:99%;background:#12805c'></i></div></div>
+</div>
+<h3>这一套能省的券</h3><div class='card coupon'><table>
+<tr><th>餐次</th><th>餐品</th><th>券</th><th>划算方式</th><th>说明</th></tr>
+<tr><td>午餐</td><td>中薯条</td><td>中薯条买一送一</td><td><b class='save'>¥13.5 不变，多送 1 份（价值 ¥13.5）</b></td><td style='text-align:left;white-space:normal'>多送 1 份中薯条：价值 ¥13.5，额外 289 kcal、165 mg 钠</td></tr>
+</table>
+<div class='price' style='margin-top:8px'>本套：价格不变，多拿价值 ¥13.5 的东西。</div>
+<div class='price' style='margin-top:4px'><b>买一送一不是打折</b>：钱一样多，但你多拿到一份 —— 多出来的那份能量与钠已经算给你看了，吃不完分给同事，别当成免费的空气。券后金额由麦当劳 <code>calculate-price</code> 接口带 <code>couponId</code> + <code>couponCode</code> 当场试算，不是估算。</div>
 </div>
 </div>
 <h2>方案 C · 低钠轻负担</h2>
 <div class='card'>
-<div class='price'>把钠压到最低（选低钠主食、饮品让位给白水），能量略有浮动可接受　·　预估 <b style='color:#1b1f24'>¥121.0</b></div>
-<h3>早餐　<span class='tag ok'>占全天 28%</span>　<span style='font-size:12px;color:#667085'>2026-10-17 08:30</span></h3>
+<div class='price'>把钠压到最低（选低钠主食、饮品让位给白水），能量略有浮动可接受　·　预估 <b style='color:#1b1f24'>¥123.0</b></div>
+<h3>早餐　<span class='tag ok'>占全天 27%</span>　<span style='font-size:12px;color:#667085'>2026-10-17 08:30</span></h3>
 <div class='meal'>
 <span class='chip'>火腿扒麦满分<small>261kcal · 蛋白14g · 钠608mg ¥10.0</small></span>
-<span class='chip'>冰浓浓抹茶牛奶大杯<small>大杯</small><small>240kcal · 蛋白9g · 钠89mg ¥19.0</small></span>
+<span class='chip'>大杯玉米杯<small>大杯</small><small>87kcal · 蛋白4g · 钠2mg ¥13.0</small></span>
+<span class='chip'>大杯怡泉+C<small>大杯</small><small>168kcal · 蛋白0g · 钠0mg ¥11.5</small></span>
 </div>
 <table><tr><th>餐品</th><th>能量</th><th>蛋白</th><th>脂肪</th><th>碳水</th><th>钠</th><th>钙</th><th>价格</th></tr>
 <tr><td>火腿扒麦满分</td><td>261</td><td>14</td><td>12</td><td>24</td><td>608</td><td>131</td><td>¥10.0</td></tr>
-<tr><td>冰浓浓抹茶牛奶大杯</td><td>240</td><td>9</td><td>7</td><td>33</td><td>89</td><td>314</td><td>¥19.0</td></tr>
-<tr><td>小计</td><td>501</td><td>23</td><td>19</td><td>57</td><td>697</td><td>445</td><td>¥29.0</td></tr>
+<tr><td>大杯玉米杯</td><td>87</td><td>4</td><td>1</td><td>12</td><td>2</td><td>10</td><td>¥13.0</td></tr>
+<tr><td>大杯怡泉+C</td><td>168</td><td>0</td><td>0</td><td>41</td><td>0</td><td>0</td><td>¥11.5</td></tr>
+<tr><td>小计</td><td>516</td><td>18</td><td>13</td><td>77</td><td>610</td><td>141</td><td>¥34.5</td></tr>
 </table>
 <h3>午餐　<span class='tag ok'>占全天 38%</span>　<span style='font-size:12px;color:#667085'>2026-10-17 12:00</span></h3>
 <div class='meal'>
-<span class='chip'>培根蔬萃双层牛堡<small>442kcal · 蛋白24g · 钠728mg ¥24.5</small></span>
-<span class='chip'>大杯玉米杯<small>大杯</small><small>87kcal · 蛋白4g · 钠2mg ¥13.0</small></span>
-<span class='chip'>可乐中杯<small>中杯</small><small>147kcal · 蛋白0g · 钠0mg ¥9.5</small></span>
-</div>
-<table><tr><th>餐品</th><th>能量</th><th>蛋白</th><th>脂肪</th><th>碳水</th><th>钠</th><th>钙</th><th>价格</th></tr>
-<tr><td>培根蔬萃双层牛堡</td><td>442</td><td>24</td><td>23</td><td>34</td><td>728</td><td>73</td><td>¥24.5</td></tr>
-<tr><td>大杯玉米杯</td><td>87</td><td>4</td><td>1</td><td>12</td><td>2</td><td>10</td><td>¥13.0</td></tr>
-<tr><td>可乐中杯</td><td>147</td><td>0</td><td>0</td><td>36</td><td>0</td><td>10</td><td>¥9.5</td></tr>
-<tr><td>小计</td><td>676</td><td>28</td><td>24</td><td>82</td><td>730</td><td>93</td><td>¥47.0</td></tr>
-</table>
-<h3>晚餐　<span class='tag ok'>占全天 34%</span>　<span style='font-size:12px;color:#667085'>2026-10-16 18:30</span></h3>
-<div class='meal'>
 <span class='chip'>麦香鱼<small>325kcal · 蛋白16g · 钠556mg ¥22.5</small></span>
 <span class='chip'>小杯玉米杯<small>小杯</small><small>53kcal · 蛋白2g · 钠1mg ¥13.0</small></span>
-<span class='chip'>可乐大杯<small>大杯</small><small>224kcal · 蛋白0g · 钠0mg ¥9.5</small></span>
+<span class='chip'>热浓浓抹茶牛奶大杯<small>大杯</small><small>333kcal · 蛋白14g · 钠142mg ¥19.0</small></span>
 </div>
 <table><tr><th>餐品</th><th>能量</th><th>蛋白</th><th>脂肪</th><th>碳水</th><th>钠</th><th>钙</th><th>价格</th></tr>
 <tr><td>麦香鱼</td><td>325</td><td>16</td><td>13</td><td>35</td><td>556</td><td>99</td><td>¥22.5</td></tr>
 <tr><td>小杯玉米杯</td><td>53</td><td>2</td><td>1</td><td>7</td><td>1</td><td>6</td><td>¥13.0</td></tr>
+<tr><td>热浓浓抹茶牛奶大杯</td><td>333</td><td>14</td><td>12</td><td>41</td><td>142</td><td>482</td><td>¥19.0</td></tr>
+<tr><td>小计</td><td>711</td><td>32</td><td>26</td><td>83</td><td>699</td><td>587</td><td>¥54.5</td></tr>
+</table>
+<h3>晚餐　<span class='tag warn'>占全天 35%</span>　<span style='font-size:12px;color:#667085'>2026-10-16 18:30</span></h3>
+<div class='meal'>
+<span class='chip'>培根蔬萃双层牛堡<small>442kcal · 蛋白24g · 钠728mg ¥24.5</small></span>
+<span class='chip'>可乐大杯<small>大杯</small><small>224kcal · 蛋白0g · 钠0mg ¥9.5</small></span>
+</div>
+<table><tr><th>餐品</th><th>能量</th><th>蛋白</th><th>脂肪</th><th>碳水</th><th>钠</th><th>钙</th><th>价格</th></tr>
+<tr><td>培根蔬萃双层牛堡</td><td>442</td><td>24</td><td>23</td><td>34</td><td>728</td><td>73</td><td>¥24.5</td></tr>
 <tr><td>可乐大杯</td><td>224</td><td>0</td><td>0</td><td>55</td><td>0</td><td>15</td><td>¥9.5</td></tr>
-<tr><td>小计</td><td>602</td><td>18</td><td>14</td><td>97</td><td>557</td><td>120</td><td>¥45.0</td></tr>
+<tr><td>小计</td><td>666</td><td>24</td><td>23</td><td>89</td><td>728</td><td>88</td><td>¥34.0</td></tr>
 </table>
 <div class='grid' style='margin-top:12px'>
-<div class='kpi'><div class='lab'>能量</div><div class='val'>1779</div><div class='lab'>目标 2350 · 76% <span class='tag bad'>不足</span></div><div class='bar'><i style='width:47%;background:#b42318'></i></div></div>
-<div class='kpi'><div class='lab'>蛋白质</div><div class='val'>69g</div><div class='lab'>目标 72g · 96% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:60%;background:#12805c'></i></div></div>
-<div class='kpi'><div class='lab'>脂肪</div><div class='val'>57g</div><div class='lab'>目标 78g · 73% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:45%;background:#12805c'></i></div></div>
-<div class='kpi'><div class='lab'>碳水化合物</div><div class='val'>236g</div><div class='lab'>目标 339g · 70% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:43%;background:#12805c'></i></div></div>
-<div class='kpi'><div class='lab'>钠</div><div class='val'>1984mg</div><div class='lab'>目标 2000mg · 99% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:62%;background:#12805c'></i></div></div>
-<div class='kpi'><div class='lab'>钙</div><div class='val'>658mg</div><div class='lab'>目标 800mg · 82% <span class='tag bad'>不足</span></div><div class='bar'><i style='width:51%;background:#b42318'></i></div></div>
+<div class='kpi'><div class='lab'>能量</div><div class='val'>1893</div><div class='lab'>目标 2350 · 81% <span class='tag bad'>不足</span></div><div class='bar'><i style='width:50%;background:#b42318'></i></div></div>
+<div class='kpi'><div class='lab'>蛋白质</div><div class='val'>74g</div><div class='lab'>目标 72g · 103% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:64%;background:#12805c'></i></div></div>
+<div class='kpi'><div class='lab'>脂肪</div><div class='val'>62g</div><div class='lab'>目标 78g · 79% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:49%;background:#12805c'></i></div></div>
+<div class='kpi'><div class='lab'>碳水化合物</div><div class='val'>249g</div><div class='lab'>目标 339g · 73% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:46%;background:#12805c'></i></div></div>
+<div class='kpi'><div class='lab'>钠</div><div class='val'>2037mg</div><div class='lab'>目标 2000mg · 102% <span class='tag warn'>略超</span></div><div class='bar'><i style='width:64%;background:#b54708'></i></div></div>
+<div class='kpi'><div class='lab'>钙</div><div class='val'>816mg</div><div class='lab'>目标 800mg · 102% <span class='tag ok'>达标</span></div><div class='bar'><i style='width:64%;background:#12805c'></i></div></div>
 </div>
 </div>
 <h2>三套方案怎么选</h2><div class='card'><table>
-<tr><th>方案</th><th>能量</th><th>蛋白质</th><th>脂肪</th><th>碳水</th><th>钠</th><th>钙</th><th>价格</th></tr>
-<tr><td>均衡日常</td><td>2257</td><td>81g</td><td>75g</td><td>300g</td><td>2256mg</td><td>841mg</td><td>¥141.5</td></tr>
-<tr><td>高蛋白保肌</td><td>2314</td><td>94g</td><td>78g</td><td>297g</td><td>2478mg</td><td>888mg</td><td>¥142.5</td></tr>
-<tr><td>低钠轻负担</td><td>1779</td><td>69g</td><td>57g</td><td>236g</td><td>1984mg</td><td>658mg</td><td>¥121.0</td></tr>
+<tr><th>方案</th><th>能量</th><th>蛋白质</th><th>脂肪</th><th>碳水</th><th>钠</th><th>钙</th><th>价格</th><th>券后</th></tr>
+<tr><td>均衡日常</td><td>2182</td><td>78g</td><td>74g</td><td>287g</td><td>2202mg</td><td>834mg</td><td>¥136.5</td><td>多拿 ¥13.5</td></tr>
+<tr><td>高蛋白保肌</td><td>2280</td><td>94g</td><td>77g</td><td>288g</td><td>2498mg</td><td>1261mg</td><td>¥148.5</td><td>多拿 ¥13.5</td></tr>
+<tr><td>低钠轻负担</td><td>1893</td><td>74g</td><td>62g</td><td>249g</td><td>2037mg</td><td>816mg</td><td>¥123.0</td><td>—</td></tr>
 </table>
 <div class='price'>赶时间就选「均衡日常」；训练日或减脂期选「高蛋白保肌」；体检钠偏高、或今天别的两餐也偏咸，就选「低钠轻负担」。</div></div>
-<h2>必须说清楚的三件事</h2><div class='note'><ol><li><b>钠几乎不可能不超标。</b>本次方案的钠为 1984-2478mg，最低也有 1984mg。麦当劳单个主食钠含量普遍 500-1200mg，三餐都吃麦当劳基本会顶到或超过 2000mg 上限。建议其他餐次多吃新鲜蔬果补钾、全天多喝水。</li><li><b>膳食纤维与维生素大概率不足。</b>麦当劳营养接口只提供能量、蛋白质、脂肪、碳水、钠、钙六项，没有膳食纤维数据；膳食指南推荐每天 25-30g 膳食纤维，靠麦当劳本身很难吃够，请自行补充蔬菜水果。</li><li><b>这是搭配建议，不是医嘱。</b>有高血压、肾病、糖尿病等基础疾病，或对能量/钠有严格限制的人群，请以医生和临床营养师的意见为准。</li></ol></div>
+<h2>有券的组合（省钱又不牺牲健康）</h2><div class='card coupon'>
+<div class='price'>门店当前有 <b>3</b> 张券，其中 <b>1</b> 个餐品本次搭配用得上：中薯条</div>
+<table><tr><th>方案</th><th>可用券</th><th>原价</th><th>实付</th><th>划算在哪</th></tr>
+<tr><td>均衡日常</td><td>中薯条买一送一</td><td>¥136.5</td><td><b class='save'>¥136.5</b></td><td style='text-align:left;white-space:normal'>多拿 ¥13.5</td></tr>
+<tr><td>高蛋白保肌</td><td>中薯条买一送一</td><td>¥148.5</td><td><b class='save'>¥148.5</b></td><td style='text-align:left;white-space:normal'>多拿 ¥13.5</td></tr>
+</table>
+<div class='best'>💰 <b>要划算又不想动脑子，点「均衡日常」</b>：价格不变，多拿价值 ¥13.5 的东西。能量 2182 kcal、蛋白质 78 g、钠 2202 mg，达标情况和同批其他方案同一档。</div>
+<div class='price' style='margin-top:8px'>「划算法」分两种，别搞混：<b>特惠/立减</b>是同样的东西少付钱；<b>买一送一/第二份半价</b>是价格不变但多给你一份 —— 后者省下的钱是换成实物给你的，热量和钠也一起给你了，上面的表已经如实算上。下单时 <code>scripts/order.py --use-coupon</code> 会自动带上券商品编码 + <code>couponId</code> + <code>couponCode</code> 三件套。</div>
+</div>
+<h2>必须说清楚的三件事</h2><div class='note'><ol><li><b>钠几乎不可能不超标。</b>本次方案的钠为 2037-2498mg，最低也有 2037mg。麦当劳单个主食钠含量普遍 500-1200mg，三餐都吃麦当劳基本会顶到或超过 2000mg 上限。建议其他餐次多吃新鲜蔬果补钾、全天多喝水。</li><li><b>膳食纤维与维生素大概率不足。</b>麦当劳营养接口只提供能量、蛋白质、脂肪、碳水、钠、钙六项，没有膳食纤维数据；膳食指南推荐每天 25-30g 膳食纤维，靠麦当劳本身很难吃够，请自行补充蔬菜水果。</li><li><b>这是搭配建议，不是医嘱。</b>有高血压、肾病、糖尿病等基础疾病，或对能量/钠有严格限制的人群，请以医生和临床营养师的意见为准。</li></ol></div>
 <h2>本次未纳入搭配的餐品（113 项）</h2><div class='card'>
 <div class='price'>主要是捆绑套餐（营养无法拆分）与营养表暂未覆盖的限定新品：</div><ul style='margin:8px 0 0;padding-left:20px;font-size:13px'>
 <li>枫糖风味厚松饼猪柳蛋堡 —— 麦当劳营养表暂无对应数据，为保证准确性已剔除</li>
@@ -220,5 +261,49 @@ footer{margin-top:34px;color:var(--sub);font-size:12px;line-height:1.7}
 <li>猪柳麦满分组合 —— 麦当劳营养表暂无对应数据，为保证准确性已剔除</li>
 <li>…… 其余 101 项略</li>
 </ul></div>
-<footer>餐品营养与在售菜单来自麦当劳中国 MCP Server（list-nutrition-foods / query-meals / query-nearby-stores）；营养目标依据《中国居民膳食指南（2022）》与《中国居民膳食营养素参考摄入量（2023）》。本项目为麦当劳程序员节创意开发大赛参赛作品，非麦当劳官方产品，输出仅供参考，不构成医疗或营养建议。</footer>
+<h2>再来一组（换一批）</h2><div class='card'><div class='price'>不满意就再说一句 <b>「换一批」</b>：会换掉上一批点过的主食，并优先挑当前门店有券可用的组合 —— 省钱，但不牺牲达标度。</div><div class='price' style='margin-top:6px'><code>python scripts/plan.py --reroll --sex male --age 28 --height 175 --weight 72</code></div><div class='price' style='margin-top:8px'>开餐曲：运行时播放「看见什么吃什么」的开场小曲，先把食欲叫起来。页面顶部那个按钮可以再听一次（浏览器策略要求手点，不会自动响）。</div></div>
+<footer>餐品营养与在售菜单来自麦当劳中国 MCP Server（list-nutrition-foods / query-meals / query-nearby-stores / query-store-coupons / calculate-price）；营养目标依据《中国居民膳食指南（2022）》与《中国居民膳食营养素参考摄入量（2023）》。开餐曲为原创合成小段，不含第三方旋律；原曲版权归原作者所有，本项目不分发。本项目为麦当劳程序员节创意开发大赛参赛作品，非麦当劳官方产品，输出仅供参考，不构成医疗或营养建议。</footer>
+<script>const ANTHEM_TITLE="看见什么吃什么";const ANTHEM_NOTES=[["G4",0.13],["G4",0.13],["A4",0.13],["C5",0.26],["C5",0.13],["D5",0.13],["E5",0.45],["D5",0.13],["C5",0.13],["D5",0.13],["G5",0.45],["E5",0.13],["D5",0.13],["C5",0.13],["A4",0.13],["G4",0.55]];const ANTHEM_FREQ={"G4": 392.0, "A4": 440.0, "C5": 523.25, "D5": 587.33, "E5": 659.25, "G5": 783.99, "A5": 880.0};
+(function(){
+  const NOTES=ANTHEM_NOTES, FREQ=ANTHEM_FREQ;
+  let ac=null;
+  function tone(t0,f,dur,gain){
+    const o=ac.createOscillator(), g=ac.createGain();
+    o.type='triangle'; o.frequency.value=f;
+    g.gain.setValueAtTime(0.0001,t0);
+    g.gain.exponentialRampToValueAtTime(gain,t0+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    o.connect(g); g.connect(ac.destination);
+    o.start(t0); o.stop(t0+dur+0.02);
+  }
+  function kick(t0){
+    const o=ac.createOscillator(), g=ac.createGain();
+    o.type='sine'; o.frequency.setValueAtTime(70,t0);
+    o.frequency.exponentialRampToValueAtTime(40,t0+0.16);
+    g.gain.setValueAtTime(0.28,t0);
+    g.gain.exponentialRampToValueAtTime(0.0001,t0+0.16);
+    o.connect(g); g.connect(ac.destination);
+    o.start(t0); o.stop(t0+0.18);
+  }
+  function play(){
+    ac = ac || new (window.AudioContext||window.webkitAudioContext)();
+    if(ac.state==='suspended'){ac.resume();}
+    let t = ac.currentTime + 0.06;
+    NOTES.forEach(function(row){
+      tone(t, FREQ[row[0]]||440, row[1]*0.96, 0.20);
+      t += row[1];
+    });
+    for(let k=0;k+0.1<t;k+=0.52){ kick(ac.currentTime+0.06+k); }
+    return t - ac.currentTime;
+  }
+  const btn=document.getElementById('anthemBtn');
+  const tip=document.getElementById('anthemTip');
+  if(btn){ btn.addEventListener('click', function(){
+    const dur=play();
+    btn.textContent='♪ 正在播放…'; btn.classList.add('playing');
+    if(tip){ tip.textContent='原创开餐小段，约 3 秒'; }
+    setTimeout(function(){ btn.textContent='▶ 开餐曲'; btn.classList.remove('playing'); }, dur*1000);
+  }); }
+})();
+</script>
 </div></body></html>
