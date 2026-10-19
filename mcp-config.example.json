@@ -1,0 +1,12 @@
+{
+  "_comment": "复制本文件后替换占位符。真实 Token 只通过环境变量注入，不要写进任何被提交的文件。",
+  "mcpServers": {
+    "mcd-mcp": {
+      "type": "streamablehttp",
+      "url": "https://mcp.mcd.cn",
+      "headers": {
+        "Authorization": "Bearer ${MCD_MCP_TOKEN}"
+      }
+    }
+  }
+}
